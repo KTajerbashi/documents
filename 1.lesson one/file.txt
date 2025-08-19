@@ -1,0 +1,29 @@
+~> mkdir :  create directory
+~> rmdir :  remove directory
+~> getdit :  
+
+~> cd : path
+~> ls : show files and directories
+~> ls switch
+~> ls -ltrh => l:long,tr:time reverse,h:human
+~> cat : show content of file
+~> man cat : manually of command
+~> cp namefile newFileName
+~> rm : remove files
+~> . current directory
+~> .. parent directory
+~> mv : move a file
+~> grep : find in file => grep word filename
+~> su -
+~> sudo 
+~> sudo passwd user
+~> less filename : paging logs
+~> more filename : show content
+~> | : pipe command
+~> grep user syslog | less > khoroji command aval ra ba vorodi command 2 bade
+~> 
+~> 
+~> 
+~> 
+~> 
+~> 
