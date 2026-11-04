@@ -1,0 +1,1017 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name=claude:viewport-fit-sides content=cover><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}</style><style>.md-table{overflow-x:auto}@media print{.md-table{overflow-x:visible}}</style><style>:root{color-scheme:light dark;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}}:root[data-theme="dark"]{color-scheme:dark;--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}:root[data-theme="light"]{color-scheme:light}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}}body{background:var(--md-bg);color:var(--md-text);max-width:720px;margin:0 auto;padding:32px;display:flex;flex-direction:column;gap:10px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'SF Pro','Segoe UI',sans-serif;overflow-wrap:break-word}body>:first-child{margin-top:0}h1,h2,h3,h4,h5,h6{margin:6px 0 0;line-height:1.25;font-weight:600;text-wrap:balance}h1{font-size:1.35em}h2{font-size:1.15em;color:var(--md-muted)}h3,h4,h5,h6{font-size:1em}p,ul,ol,blockquote,table,pre,hr{margin:0}strong{font-weight:600}a{color:var(--md-link);text-decoration:none}a:hover{text-decoration:underline}ul,ol{display:flex;flex-direction:column;gap:6px;padding-left:22px}ul{list-style:disc}ol{list-style:decimal}:is(li,td,th)>*+:is(p,ul,ol,blockquote){margin-top:6px}blockquote{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--md-rule);padding-left:10px;color:var(--md-muted)}:not(pre)>code{background:var(--md-fill);padding:1px 3px;border-radius:4px;font:.92em 'SF Mono',ui-monospace,Menlo,Consolas,monospace}a>code{background:none;color:inherit}pre{background:var(--md-fill);padding:10px 12px;border-radius:6px;overflow-x:auto;font:12px/1.5 'SF Mono',ui-monospace,Menlo,Consolas,monospace;margin-block:4px}pre code{background:none;padding:0;font:inherit}table{width:100%;border-collapse:separate;border-spacing:2px;font:inherit}th,td{padding:6px 8px;border-radius:3px;text-align:left;vertical-align:top}th{background:var(--md-fill-strong);font-weight:600}td{background:var(--md-fill)}:is(th,td) :not(pre)>code{background:transparent}hr{border:0;border-top:1px solid var(--md-rule-strong);margin-block:10px}img{max-width:100%;height:auto;border-radius:4px}</style>
+</head><body>
+<h1>راهنمای کامل Signals در آنگولار</h1>
+<blockquote>
+<p>مستندات جامع از مباحث: <code>input()</code> در برابر <code>@Input()</code>، <code>get/set</code>، بررسی کد، <code>signal</code> در برابر <code>model</code>، و آموزش کامل Signal API همراه با نمونه‌کد، دلیل استفاده و اشتباهات رایج.</p>
+</blockquote>
+<h2>فهرست</h2>
+<ol>
+<li><a href="#1-%DA%86%D8%B1%D8%A7-signal">چرا Signal؟ (پایه‌ی درک)</a></li>
+<li><a href="#2-%D9%85%D8%B2%D8%A7%DB%8C%D8%A7%DB%8C-input-%D9%86%D8%B3%D8%A8%D8%AA-%D8%A8%D9%87-input">مزایای <code>input()</code> نسبت به <code>@Input()</code></a></li>
+<li><a href="#3-%D9%85%D8%B2%DB%8C%D8%AA-%D9%88-%D9%85%D8%AD%D8%AF%D9%88%D8%AF%DB%8C%D8%AA-getset">مزیت و محدودیت <code>get/set</code></a></li>
+<li><a href="#4-%D8%A8%D8%B1%D8%B1%D8%B3%DB%8C-%DA%A9%D8%AF-wrapper-%D8%B1%D9%88%DB%8C-signal">بررسی کد: wrapper روی signal</a></li>
+<li><a href="#5-%D8%A2%DB%8C%D8%A7-%D8%A8%D8%B1%D8%A7%DB%8C-%D8%AD%D8%B0%D9%81--%D8%A7%D8%B2-template-getter-%D8%A8%D9%86%D9%88%DB%8C%D8%B3%DB%8C%D9%85">آیا برای حذف <code>()</code> از template، getter بنویسیم؟</a></li>
+<li><a href="#6-%D9%85%D8%AB%D8%A7%D9%84-%D8%A7%D8%B5%D9%88%D9%84%DB%8C-%DA%A9%D8%A7%D9%85%D9%BE%D9%88%D9%86%D9%86%D8%AA-%D8%A8%D8%A7-route-%D9%88-guid">مثال اصولی: کامپوننت با route و <code>guid</code></a></li>
+<li><a href="#7-signal"><code>signal()</code></a></li>
+<li><a href="#8-computed"><code>computed()</code></a></li>
+<li><a href="#9-effect"><code>effect()</code></a></li>
+<li><a href="#10-untracked"><code>untracked()</code></a></li>
+<li><a href="#11-linkedsignal"><code>linkedSignal()</code></a></li>
+<li><a href="#12-input"><code>input()</code></a></li>
+<li><a href="#13-output"><code>output()</code></a></li>
+<li><a href="#14-model-%D9%88-%D9%85%D9%82%D8%A7%DB%8C%D8%B3%D9%87-%D8%A8%D8%A7-signal"><code>model()</code> و مقایسه با <code>signal</code></a></li>
+<li><a href="#15-signal-queries">Signal Queries</a></li>
+<li><a href="#16-%D8%AA%D8%B9%D8%A7%D9%85%D9%84-%D8%A8%D8%A7-rxjs">تعامل با RxJS</a></li>
+<li><a href="#17-resource-%D9%88-httpresource"><code>resource()</code> و <code>httpResource()</code></a></li>
+<li><a href="#18-%D9%86%D9%82%D8%B4%D9%87-%D8%AA%D8%B5%D9%85%DB%8C%D9%85-%DA%AF%DB%8C%D8%B1%DB%8C">نقشه‌ی تصمیم‌گیری</a></li>
+<li><a href="#19-%D9%85%D8%AB%D8%A7%D9%84-%DB%8C%DA%A9%D9%BE%D8%A7%D8%B1%DA%86%D9%87-%D8%A8%D8%A7-clean-architecture--ddd">مثال یکپارچه با Clean Architecture / DDD</a></li>
+<li><a href="#20-%D8%A7%D8%B4%D8%AA%D8%A8%D8%A7%D9%87%D8%A7%D8%AA-%D8%B1%D8%A7%DB%8C%D8%AC">اشتباهات رایج</a></li>
+<li><a href="#21-%D9%85%D8%B3%DB%8C%D8%B1-%DB%8C%D8%A7%D8%AF%DA%AF%DB%8C%D8%B1%DB%8C-%D9%BE%DB%8C%D8%B4%D9%86%D9%87%D8%A7%D8%AF%DB%8C">مسیر یادگیری پیشنهادی</a></li>
+</ol>
+<hr>
+<h2>1. چرا Signal؟</h2>
+<h3>مشکل قدیمی: zone.js</h3>
+<p>آنگولار قدیمی نمی‌دانست <strong>کدام داده تغییر کرده</strong>. برای همین <code>zone.js</code> همه‌ی رویدادها (کلیک، <code>setTimeout</code>، <code>Promise</code>، HTTP) را شنود می‌کرد و بعد از هر کدام <strong>کل درخت کامپوننت‌ها</strong> را بررسی می‌کرد (Change Detection).</p>
+<pre><code>کلیک → zone.js خبر می‌دهد → آنگولار همه‌ی کامپوننت‌ها را چک می‌کند
+</code></pre>
+<p>هزینه‌ها: عملکرد پایین‌تر در برنامه‌های بزرگ، دیباگ سخت، حجم بیشتر bundle.</p>
+<h3>راه‌حل: Signal</h3>
+<p>Signal یک <strong>جعبه‌ی مقدار است که می‌داند چه کسی آن را خوانده</strong>. وقتی مقدارش عوض شود، دقیقاً همان مصرف‌کننده‌ها (template، computed، effect) را خبر می‌کند.</p>
+<pre><code>signal تغییر کرد → فقط template/computed هایی که آن را خوانده‌اند به‌روز می‌شوند
+</code></pre>
+<p>به این مدل می‌گویند <strong>Fine-grained Reactivity</strong>.</p>
+<h3>مفاهیم کمکی</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>مفهوم</th>
+<th>توضیح</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Change Detection</strong></td>
+<td>فرایند مقایسه‌ی state با DOM و به‌روزرسانی آن</td>
+</tr>
+<tr>
+<td><strong>OnPush</strong></td>
+<td>کامپوننت فقط وقتی چک شود که input عوض شده، event داخلی داشته، یا signalاش تغییر کرده باشد</td>
+</tr>
+<tr>
+<td><strong>Zoneless</strong></td>
+<td>حذف کامل zone.js و تکیه بر signal (در نسخه‌های جدید پشتیبانی می‌شود)</td>
+</tr>
+<tr>
+<td><strong>Reactive Graph</strong></td>
+<td>گراف وابستگی: signal ← computed ← template</td>
+</tr>
+<tr>
+<td><strong>Push/Pull</strong></td>
+<td>signal هم تغییر را اطلاع می‌دهد (push) و هم مقدار را وقتی لازم است محاسبه می‌کند (pull / lazy)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>برای پروژه‌های جدید: <code>ChangeDetectionStrategy.OnPush</code> را برای همه‌ی کامپوننت‌ها بگذارید. با signal کاملاً سازگار است و مسیر ورود به zoneless را باز می‌کند.</p>
+</blockquote>
+<hr>
+<h2>2. مزایای <code>input()</code> نسبت به <code>@Input()</code></h2>
+<h3>۲.۱ واکنش‌پذیری واقعی</h3>
+<pre><code class="language-typescript">// روش قدیمی
+@Input() price = 0;
+@Input() qty = 1;
+total = 0;
+
+ngOnChanges() {
+  this.total = this.price * this.qty;
+}
+
+// روش جدید
+price = input(0);
+qty = input(1);
+total = computed(() =&gt; this.price() * this.qty());
+</code></pre>
+<p><code>total</code> خودکار و فقط وقتی لازم است دوباره محاسبه می‌شود (lazy و memoized).</p>
+<h3>۲.۲ سازگاری با Zoneless و OnPush</h3>
+<p>Change Detection دقیقاً می‌داند کدام کامپوننت به کدام مقدار وابسته است؛ عملکرد بهتر و مسیر آماده برای حذف <code>zone.js</code>.</p>
+<h3>۲.۳ Type Safety بهتر</h3>
+<pre><code class="language-typescript">name = input.required&lt;string&gt;();                          // خطا در زمان کامپایل اگر داده نشود
+disabled = input(false, { transform: booleanAttribute }); // تبدیل مقدار
+userId = input&lt;number&gt;(0, { alias: &#39;id&#39; });               // نام مستعار
+</code></pre>
+<p>در <code>input.required</code> مقدار هرگز <code>undefined</code> نیست.</p>
+<h3>۲.۴ حذف نیاز به <code>ngOnChanges</code></h3>
+<p>منطق وابسته به input را به‌جای پخش‌کردن در <code>ngOnInit</code>، <code>ngOnChanges</code> و setterها، declarative با <code>computed</code> و <code>effect</code> می‌نویسید.</p>
+<h3>۲.۵ Read-only بودن</h3>
+<p><code>this.name.set(...)</code> برای input وجود ندارد؛ جریان داده یک‌طرفه و قابل پیش‌بینی می‌ماند.</p>
+<h3>مقایسه</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>مورد</th>
+<th><code>@Input()</code> ساده</th>
+<th><code>input()</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>تشخیص تغییر</td>
+<td>وابسته به Zone/ngOnChanges</td>
+<td>دقیق و Signal-based</td>
+</tr>
+<tr>
+<td>مقدار مشتق‌شده</td>
+<td>دستی</td>
+<td><code>computed</code> خودکار</td>
+</tr>
+<tr>
+<td>Required</td>
+<td>ضعیف</td>
+<td><code>input.required</code></td>
+</tr>
+<tr>
+<td>Zoneless</td>
+<td>مشکل‌دار</td>
+<td>کاملاً سازگار</td>
+</tr>
+<tr>
+<td>Immutable</td>
+<td>خیر</td>
+<td>بله</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p><code>@Input()</code> منسوخ نشده و کار می‌کند، ولی مسیر توصیه‌شده‌ی آنگولار signal-based است (از Angular 17.1).</p>
+</blockquote>
+<hr>
+<h2>3. مزیت و محدودیت <code>get/set</code></h2>
+<p>Getter و setter اجازه می‌دهند هنگام خواندن/نوشتن property منطق اجرا شود، بدون تغییر شکل استفاده‌ی بیرونی.</p>
+<h3>کاربردها</h3>
+<p><strong>اعتبارسنجی و پاک‌سازی ورودی</strong></p>
+<pre><code class="language-typescript">private _name = &#39;&#39;;
+
+@Input()
+set name(value: string) {
+  this._name = value?.trim().toUpperCase() ?? &#39;&#39;;
+}
+get name(): string {
+  return this._name;
+}
+</code></pre>
+<p><strong>واکنش به تغییر Input بدون <code>ngOnChanges</code></strong></p>
+<pre><code class="language-typescript">@Input()
+set userId(id: number) {
+  this._userId = id;
+  this.loadUser(id);
+}
+</code></pre>
+<p><strong>Property محاسبه‌شده</strong></p>
+<pre><code class="language-typescript">get fullName(): string {
+  return `${this.firstName} ${this.lastName}`;
+}
+</code></pre>
+<p><strong>کپسوله‌سازی:</strong> فیلد private و دسترسی کنترل‌شده، یا property فقط‌خواندنی با ارائه‌ی فقط <code>get</code>.</p>
+<h3>⚠️ احتیاط‌ها</h3>
+<ul>
+<li>Getter در template در <strong>هر چرخه‌ی Change Detection</strong> اجرا می‌شود. محاسبه‌ی سنگین باعث افت عملکرد می‌شود؛ به‌جای آن <code>computed</code> یا <code>pure pipe</code>.</li>
+<li>در setter کار سنگین و side effect زیاد نکنید.</li>
+<li>Getter و setter بهتر است type یکسان داشته باشند.</li>
+</ul>
+<h3>مقایسه با Signal</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>نیاز</th>
+<th>بهترین انتخاب</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>مقدار مشتق‌شده</td>
+<td><code>computed()</code></td>
+</tr>
+<tr>
+<td>واکنش به تغییر Input</td>
+<td><code>effect()</code> یا <code>computed()</code></td>
+</tr>
+<tr>
+<td>تبدیل مقدار ورودی</td>
+<td><code>input(..., { transform })</code></td>
+</tr>
+<tr>
+<td>پروژه‌ی قدیمی (قبل از v17.1)</td>
+<td><code>get/set</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2>4. بررسی کد: wrapper روی signal</h2>
+<h3>کد بررسی‌شده</h3>
+<pre><code class="language-typescript">name = signal&lt;string&gt;(&#39;&#39;);
+
+get getName(): string {
+  return this.name();
+}
+
+set setName(value: string) {
+  this.name.set(value);
+}
+</code></pre>
+<h3>نتیجه: کار می‌کند، ولی اصولی نیست</h3>
+<ol>
+<li><strong>Redundant Abstraction:</strong> signal خودش API کامل دارد (<code>name()</code> و <code>name.set()</code>)؛ wrapper ارزشی اضافه نمی‌کند.</li>
+<li><strong>نام‌گذاری غلط:</strong> در TypeScript get/set یک property با <strong>یک نام</strong> تعریف می‌شوند. <code>getName</code> و <code>setName</code> دو property مجزا هستند و استفاده‌شان عجیب است (<code>this.setName = 'Ali'</code>)؛ سبک Java است.</li>
+<li><strong>پنهان شدن signal بودن:</strong> بیرون نمی‌داند با signal طرف است و نمی‌تواند مستقیم در <code>computed</code> استفاده کند.</li>
+<li><strong>Encapsulation ظاهری:</strong> <code>name</code> همچنان public است و <code>name.set()</code> مستقیم قابل‌فراخوانی است.</li>
+</ol>
+<h3>روش‌های اصولی</h3>
+<p><strong>حالت ۱: ساده (بیشتر موارد)</strong></p>
+<pre><code class="language-typescript">name = signal(&#39;&#39;);
+// خواندن: this.name()
+// نوشتن:  this.name.set(&#39;Ali&#39;)
+</code></pre>
+<p><strong>حالت ۲: فقط‌خواندنی برای بیرون + متد دارای منطق</strong></p>
+<pre><code class="language-typescript">private readonly _name = signal(&#39;&#39;);
+readonly name = this._name.asReadonly();
+
+setName(value: string) {
+  this._name.set(value.trim());
+}
+</code></pre>
+<p><strong>حالت ۳: مقدار مشتق‌شده</strong></p>
+<pre><code class="language-typescript">firstName = signal(&#39;&#39;);
+lastName = signal(&#39;&#39;);
+fullName = computed(() =&gt; `${this.firstName()} ${this.lastName()}`);
+</code></pre>
+<p><strong>حالت ۴: سازگاری با <code>@Input</code> قدیمی (هر دو با یک نام)</strong></p>
+<pre><code class="language-typescript">private readonly _name = signal(&#39;&#39;);
+
+@Input()
+set name(value: string) { this._name.set(value); }
+get name(): string { return this._name(); }
+</code></pre>
+<p><strong>حالت ۵: نسخه‌های جدید</strong></p>
+<pre><code class="language-typescript">name = input(&#39;&#39;);   // ورودی فقط‌خواندنی
+name = model(&#39;&#39;);   // two-way binding
+</code></pre>
+<blockquote>
+<p><strong>قاعده‌ی کلی:</strong> wrapper فقط وقتی بنویسید که <strong>منطق اضافه</strong> (validation، transform، قانون دامنه) داشته باشد.</p>
+</blockquote>
+<hr>
+<h2>5. آیا برای حذف <code>()</code> از template، getter بنویسیم؟</h2>
+<p>سوال: به‌جای <code>{{ name() }}</code> از <code>{{ getName }}</code> استفاده کنیم؟</p>
+<p><strong>پاسخ: توجیه خوبی ندارد.</strong></p>
+<ul>
+<li>فقط تغییر ظاهری است و برای هر signal یک getter Boilerplate اضافه می‌کند.</li>
+<li>با قرارداد جامعه‌ی Angular مغایرت دارد؛ <code>()</code> به خواننده می‌گوید «این signal است».</li>
+<li>دو راه برای یک چیز، ذهن را درگیر می‌کند (در <code>computed</code> و child باید <code>name()</code> نوشت).</li>
+<li>getter در template معمولاً علامت هشدار است و خواننده را نگران می‌کند.</li>
+<li><code>()</code> عمداً بخشی از مدل ذهنی signal است (<code>input()</code>, <code>computed()</code>, <code>model()</code>, <code>viewChild()</code>, <code>resource()</code>).</li>
+</ul>
+<h3>جایگزین‌های تمیز</h3>
+<p><strong><code>@let</code> (Angular 18.1+)</strong> برای خواندن چندباره:</p>
+<pre><code class="language-html">@let userName = name();
+&lt;h1&gt;{{ userName }}&lt;/h1&gt;
+&lt;p&gt;Hello {{ userName }}&lt;/p&gt;
+</code></pre>
+<p><strong><code>@if</code> با alias:</strong></p>
+<pre><code class="language-html">@if (user(); as u) {
+  &lt;div&gt;{{ u.name }}&lt;/div&gt;
+}
+</code></pre>
+<hr>
+<h2>6. مثال اصولی: کامپوننت با route و <code>guid</code></h2>
+<h3>مشکلات کد اولیه</h3>
+<ol>
+<li><code>ngOnInit</code> خالی؛ باید حذف شود.</li>
+<li>پیشوند <code>_</code> برای accessor عمومی قرارداد را می‌شکند (<code>_</code> برای فیلد private است).</li>
+<li>get/set هیچ منطقی اضافه نمی‌کند.</li>
+<li><code>guid</code> درست است ولی به تنظیم router نیاز دارد.</li>
+</ol>
+<h3>کامپوننت اصلاح‌شده</h3>
+<pre><code class="language-typescript">import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from &#39;@angular/core&#39;;
+import { toObservable, toSignal } from &#39;@angular/core/rxjs-interop&#39;;
+import { switchMap } from &#39;rxjs&#39;;
+import { VehicleLicenseApi } from &#39;./vehicle-license.api&#39;;
+
+@Component({
+  selector: &#39;rg-vehicle-license-manage&#39;,
+  templateUrl: &#39;./vehicle-license-manage.html&#39;,
+  styleUrl: &#39;./vehicle-license-manage.scss&#39;,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class VehicleLicenseManage {
+  private readonly api = inject(VehicleLicenseApi);
+
+  // ۱) ورودی از route (فقط‌خواندنی، الزامی)
+  readonly guid = input.required&lt;string&gt;();
+
+  // ۲) داده‌ی سرور: با هر تغییر guid خودکار دوباره لود می‌شود
+  readonly license = toSignal(
+    toObservable(this.guid).pipe(switchMap(guid =&gt; this.api.getByGuid(guid)))
+  );
+
+  // ۳) state فرم: قابل‌نوشتن فقط داخل کلاس
+  private readonly _licenseNumber = signal(&#39;&#39;);
+  readonly licenseNumber = this._licenseNumber.asReadonly();
+
+  // ۴) مقدار مشتق‌شده
+  readonly isValid = computed(() =&gt; this._licenseNumber().length &gt;= 5);
+
+  // ۵) تغییر state فقط از مسیر کنترل‌شده
+  setLicenseNumber(value: string): void {
+    this._licenseNumber.set(value.trim().toUpperCase());
+  }
+}
+</code></pre>
+<h3>Template</h3>
+<pre><code class="language-html">&lt;h2&gt;مدیریت گواهی: {{ guid() }}&lt;/h2&gt;
+
+@if (license(); as l) {
+  &lt;p&gt;مالک: {{ l.ownerName }}&lt;/p&gt;
+}
+
+&lt;input
+  [value]=&#34;licenseNumber()&#34;
+  (input)=&#34;setLicenseNumber($any($event.target).value)&#34; /&gt;
+
+@if (!isValid()) {
+  &lt;small&gt;شماره باید حداقل ۵ کاراکتر باشد&lt;/small&gt;
+}
+</code></pre>
+<h3>تنظیم لازم Router</h3>
+<pre><code class="language-typescript">// app.config.ts
+provideRouter(routes, withComponentInputBinding())
+
+// routes
+{ path: &#39;vehicle-license/:guid&#39;, component: VehicleLicenseManage }
+</code></pre>
+<p>نام input باید دقیقاً با <code>:guid</code> یکی باشد؛ در غیر این‌صورت از <code>alias</code> استفاده کنید: <code>input.required&lt;string&gt;({ alias: 'guid' })</code>.</p>
+<h3>چرا این‌طور نوشتیم؟</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>تصمیم</th>
+<th>دلیل</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input.required</code></td>
+<td>اگر route درست تنظیم نشود، خطا همان لحظه مشخص می‌شود</td>
+</tr>
+<tr>
+<td><code>toObservable</code> + <code>switchMap</code></td>
+<td>با تغییر guid، درخواست قبلی لغو و داده‌ی جدید لود می‌شود (کامپوننت reuse می‌شود)</td>
+</tr>
+<tr>
+<td><code>private</code> + <code>asReadonly()</code></td>
+<td>Encapsulation واقعی</td>
+</tr>
+<tr>
+<td>متد <code>setLicenseNumber</code></td>
+<td>چون <code>trim</code> و <code>toUpperCase</code> دارد، ارزش واقعی اضافه می‌کند</td>
+</tr>
+<tr>
+<td><code>computed</code> برای <code>isValid</code></td>
+<td>وابستگی را ردیابی می‌کند و فقط در صورت لزوم محاسبه می‌شود</td>
+</tr>
+<tr>
+<td><code>OnPush</code></td>
+<td>سازگار با signal و رندر حداقلی</td>
+</tr>
+<tr>
+<td>حذف <code>ngOnInit</code></td>
+<td>همه‌چیز declarative است</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>کی کدام؟</h3>
+<pre><code class="language-typescript">count = signal(0);                                   // state ساده بدون قانون
+private readonly _x = signal(&#39;&#39;);                    // state با قانون
+readonly x = this._x.asReadonly();
+total = computed(() =&gt; this.price() * this.qty());   // مشتق‌شده
+value = model(&#39;&#39;);                                   // two-way
+</code></pre>
+<h3>get/set کجا هنوز درست است؟</h3>
+<ol>
+<li>کد قدیمی با <code>@Input() set x(...)</code> که هنوز مهاجرت نکرده.</li>
+<li>کلاس‌های غیر component (مثل Entity یا Value Object در لایه‌ی Domain).</li>
+</ol>
+<hr>
+<h2>7. <code>signal()</code></h2>
+<p><strong>مفهوم:</strong> مخزن مقدار واکنش‌گرا و قابل‌نوشتن.
+<strong>چرا:</strong> تغییرش خودکار به template و وابسته‌ها برسد، بدون <code>ngOnChanges</code>، <code>markForCheck</code> یا <code>subscribe</code>.</p>
+<pre><code class="language-typescript">count = signal(0);
+
+count();                    // خواندن
+count.set(5);               // مقداردهی
+count.update(c =&gt; c + 1);   // بر اساس مقدار قبلی
+</code></pre>
+<h3>Immutability (بسیار مهم)</h3>
+<p>Signal تغییر را با مقایسه‌ی reference (<code>Object.is</code>) تشخیص می‌دهد.</p>
+<pre><code class="language-typescript">user = signal({ name: &#39;Ali&#39;, age: 30 });
+
+// ❌ غلط: reference یکی است
+this.user().age = 31;
+
+// ✅ درست
+this.user.update(u =&gt; ({ ...u, age: 31 }));
+
+// آرایه
+items = signal&lt;string[]&gt;([]);
+this.items.update(list =&gt; [...list, &#39;new&#39;]);              // افزودن
+this.items.update(list =&gt; list.filter(x =&gt; x !== &#39;a&#39;));   // حذف
+</code></pre>
+<h3>Equality سفارشی</h3>
+<pre><code class="language-typescript">point = signal({ x: 1, y: 2 }, {
+  equal: (a, b) =&gt; a.x === b.x &amp;&amp; a.y === b.y,
+});
+</code></pre>
+<h3>مثال: Loading State</h3>
+<pre><code class="language-typescript">@Component({
+  template: `
+    &lt;button (click)=&#34;save()&#34; [disabled]=&#34;isSaving()&#34;&gt;ذخیره&lt;/button&gt;
+    @if (isSaving()) { &lt;span&gt;در حال ذخیره...&lt;/span&gt; }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SaveButton {
+  protected readonly isSaving = signal(false);
+
+  async save() {
+    this.isSaving.set(true);
+    try { await this.api.save(); }
+    finally { this.isSaving.set(false); }
+  }
+}
+</code></pre>
+<hr>
+<h2>8. <code>computed()</code></h2>
+<p><strong>مفهوم:</strong> signal <strong>فقط‌خواندنی</strong> که از signalهای دیگر محاسبه می‌شود.</p>
+<p><strong>چرا:</strong></p>
+<ul>
+<li><strong>Lazy:</strong> تا کسی نخواند محاسبه نمی‌شود.</li>
+<li><strong>Memoized:</strong> تا وابستگی‌ها عوض نشوند، نتیجه cache است.</li>
+<li><strong>ردیابی خودکار وابستگی:</strong> نیازی به لیست dependency نیست (برخلاف <code>useMemo</code> در React).</li>
+</ul>
+<pre><code class="language-typescript">price = signal(100);
+qty = signal(2);
+discount = signal(0.1);
+
+subtotal = computed(() =&gt; this.price() * this.qty());
+total = computed(() =&gt; this.subtotal() * (1 - this.discount()));
+</code></pre>
+<h3>مثال: فیلتر لیست</h3>
+<pre><code class="language-typescript">products = signal&lt;Product[]&gt;([]);
+search = signal(&#39;&#39;);
+onlyInStock = signal(false);
+
+filtered = computed(() =&gt; {
+  const q = this.search().toLowerCase();
+  return this.products().filter(p =&gt;
+    p.name.toLowerCase().includes(q) &amp;&amp;
+    (!this.onlyInStock() || p.stock &gt; 0)
+  );
+});
+
+count = computed(() =&gt; this.filtered().length);
+</code></pre>
+<h3>قوانین</h3>
+<ul>
+<li>داخل <code>computed</code> <strong>side effect ننویسید</strong> (HTTP، <code>set</code> روی signal دیگر).</li>
+<li>باید <strong>pure</strong> باشد.</li>
+<li>وابستگی شرطی مشکلی ندارد؛ فقط signalهای خوانده‌شده در اجرای فعلی ردیابی می‌شوند.</li>
+</ul>
+<p><strong>چرا بهتر از getter؟</strong> getter در هر Change Detection اجرا می‌شود؛ <code>computed</code> فقط وقتی وابستگی عوض شود.</p>
+<hr>
+<h2>9. <code>effect()</code></h2>
+<p><strong>مفهوم:</strong> تابعی که هر بار signalهای خوانده‌شده در آن تغییر کنند، دوباره اجرا می‌شود.
+<strong>چرا:</strong> برای کار با <strong>دنیای بیرون از آنگولار</strong>: logging، localStorage، آنالیتیکس، کتابخانه‌ی ثالث، canvas.</p>
+<pre><code class="language-typescript">constructor() {
+  effect(() =&gt; {
+    localStorage.setItem(&#39;theme&#39;, this.theme());
+  });
+
+  effect((onCleanup) =&gt; {
+    const id = setInterval(() =&gt; console.log(this.count()), 1000);
+    onCleanup(() =&gt; clearInterval(id));   // پاک‌سازی قبل از اجرای بعدی
+  });
+}
+</code></pre>
+<h3>⚠️ مهم‌ترین قانون</h3>
+<p><strong>برای ساختن state مشتق‌شده از effect استفاده نکنید.</strong></p>
+<pre><code class="language-typescript">// ❌ بد
+effect(() =&gt; { this.total.set(this.price() * this.qty()); });
+
+// ✅ خوب
+total = computed(() =&gt; this.price() * this.qty());
+</code></pre>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>نیاز</th>
+<th>ابزار</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>مقدار مشتق‌شده</td>
+<td><code>computed</code></td>
+</tr>
+<tr>
+<td>مشتق‌شده که کاربر هم می‌تواند بنویسد</td>
+<td><code>linkedSignal</code></td>
+</tr>
+<tr>
+<td>کار روی دنیای بیرونی</td>
+<td><code>effect</code></td>
+</tr>
+<tr>
+<td>واکنش به رویداد کاربر</td>
+<td>متد event handler</td>
+</tr>
+<tr>
+<td>بارگذاری async</td>
+<td><code>resource</code> / RxJS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>effect باید در <strong>injection context</strong> ساخته شود (constructor یا field initializer).</p>
+<hr>
+<h2>10. <code>untracked()</code></h2>
+<p><strong>مفهوم:</strong> مقدار را بخوان ولی آن را وابستگی حساب نکن.</p>
+<pre><code class="language-typescript">effect(() =&gt; {
+  const user = this.user();                       // ردیابی می‌شود
+  const theme = untracked(() =&gt; this.theme());    // ردیابی نمی‌شود
+  this.logger.log(user.id, theme);
+});
+</code></pre>
+<p>فقط تغییر <code>user</code> باعث اجرای دوباره می‌شود.</p>
+<hr>
+<h2>11. <code>linkedSignal()</code></h2>
+<p><strong>مفهوم:</strong> مثل <code>computed</code> از signal دیگر مقدار می‌گیرد ولی قابل <code>set</code> دستی هم هست؛ با تغییر منبع دوباره reset می‌شود.
+<strong>چرا:</strong> مسئله‌ی کلاسیک «لیست گزینه‌ها عوض شد، انتخاب باید به اولین مورد برگردد، ولی کاربر هم می‌تواند انتخاب کند.»</p>
+<pre><code class="language-typescript">brands = signal([&#39;Toyota&#39;, &#39;BMW&#39;, &#39;Kia&#39;]);
+selected = linkedSignal(() =&gt; this.brands()[0]);
+
+this.selected.set(&#39;Kia&#39;);   // انتخاب کاربر
+this.brands.set([&#39;Audi&#39;]);  // منبع عوض شد → selected = &#39;Audi&#39;
+</code></pre>
+<p>حفظ انتخاب قبلی اگر هنوز وجود دارد:</p>
+<pre><code class="language-typescript">selected = linkedSignal&lt;string[], string&gt;({
+  source: this.brands,
+  computation: (list, previous) =&gt;
+    previous &amp;&amp; list.includes(previous.value) ? previous.value : list[0],
+});
+</code></pre>
+<hr>
+<h2>12. <code>input()</code></h2>
+<p><strong>مفهوم:</strong> signal فقط‌خواندنی که parent مقدارش را می‌دهد.
+<strong>چرا:</strong> reactive، type-safe، و قابل استفاده‌ی مستقیم در <code>computed</code>.</p>
+<pre><code class="language-typescript">name = input(&#39;&#39;);                                          // اختیاری
+id = input.required&lt;number&gt;();                             // الزامی
+active = input(false, { transform: booleanAttribute });    // تبدیل
+label = input(&#39;&#39;, { alias: &#39;title&#39; });                     // alias
+</code></pre>
+<pre><code class="language-html">&lt;app-card [id]=&#34;5&#34; title=&#34;سلام&#34; active /&gt;
+</code></pre>
+<p>input همیشه reactive است:</p>
+<pre><code class="language-typescript">fullName = computed(() =&gt; `${this.first()} ${this.last()}`);
+</code></pre>
+<p>با <code>withComponentInputBinding()</code> پارامتر route، query string و data مستقیم input می‌شوند.</p>
+<hr>
+<h2>13. <code>output()</code></h2>
+<p><strong>مفهوم:</strong> child به parent رویداد می‌فرستد.
+<strong>چرا:</strong> جریان داده یک‌طرفه می‌ماند: <strong>داده به پایین (input)، رویداد به بالا (output)</strong>.</p>
+<pre><code class="language-typescript">saved = output&lt;Order&gt;();
+cancelled = output&lt;void&gt;();
+
+save() { this.saved.emit(this.order()); }
+</code></pre>
+<pre><code class="language-html">&lt;app-order-form (saved)=&#34;onSaved($event)&#34; (cancelled)=&#34;close()&#34; /&gt;
+</code></pre>
+<blockquote>
+<p><code>output()</code> signal نیست؛ emitter ساده است و در پروژه‌های جدید جایگزین <code>EventEmitter</code> می‌شود.</p>
+</blockquote>
+<hr>
+<h2>14. <code>model()</code> و مقایسه با <code>signal</code></h2>
+<h3>خلاصه</h3>
+<ul>
+<li><strong><code>signal()</code></strong>: state <strong>داخلی</strong>؛ فقط خود کامپوننت مالک است.</li>
+<li><strong><code>model()</code></strong>: state <strong>مشترک</strong> بین parent و child؛ signal قابل‌نوشتن که هم input است و هم output (<code>&lt;name&gt;Change</code>) و two-way binding می‌دهد.</li>
+</ul>
+<h3><code>model()</code> در عمل</h3>
+<pre><code class="language-typescript">value = model(&#39;&#39;);                  // input: value  +  output: valueChange
+value = model.required&lt;string&gt;();   // الزامی
+</code></pre>
+<p>معادل دستی:</p>
+<pre><code class="language-typescript">value = input(0);
+valueChange = output&lt;number&gt;();
+</code></pre>
+<h3>مثال Child و Parent</h3>
+<pre><code class="language-typescript">@Component({
+  selector: &#39;app-counter&#39;,
+  template: `
+    &lt;button (click)=&#34;dec()&#34;&gt;-&lt;/button&gt;
+    &lt;span&gt;{{ value() }}&lt;/span&gt;
+    &lt;button (click)=&#34;inc()&#34;&gt;+&lt;/button&gt;
+  `,
+})
+export class Counter {
+  value = model(0);
+  inc() { this.value.update(v =&gt; v + 1); }
+  dec() { this.value.update(v =&gt; v - 1); }
+}
+
+@Component({
+  imports: [Counter],
+  template: `
+    &lt;app-counter [(value)]=&#34;qty&#34; /&gt;
+    &lt;p&gt;Parent sees: {{ qty() }}&lt;/p&gt;
+  `,
+})
+export class Parent {
+  qty = signal(1);
+}
+</code></pre>
+<p>استفاده‌ی یک‌طرفه:</p>
+<pre><code class="language-html">&lt;app-counter [value]=&#34;5&#34; /&gt;
+&lt;app-counter [value]=&#34;qty()&#34; (valueChange)=&#34;onChange($event)&#34; /&gt;
+</code></pre>
+<h3>مقایسه‌ی ابزارها</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>signal()</code></th>
+<th><code>input()</code></th>
+<th><code>model()</code></th>
+<th><code>output()</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>جهت داده</td>
+<td>داخلی</td>
+<td>parent → child</td>
+<td>parent ⇄ child</td>
+<td>child → parent</td>
+</tr>
+<tr>
+<td>child می‌تواند بنویسد؟</td>
+<td>بله</td>
+<td>خیر</td>
+<td>بله</td>
+<td>emit</td>
+</tr>
+<tr>
+<td>parent می‌تواند مقدار بدهد؟</td>
+<td>خیر</td>
+<td>بله</td>
+<td>بله</td>
+<td>خیر</td>
+</tr>
+<tr>
+<td><code>.set()</code> / <code>.update()</code></td>
+<td>دارد</td>
+<td>ندارد</td>
+<td>دارد</td>
+<td>ندارد</td>
+</tr>
+<tr>
+<td>two-way <code>[( )]</code></td>
+<td>خیر</td>
+<td>خیر</td>
+<td><strong>بله</strong></td>
+<td>خیر</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>کی کدام؟</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>سناریو</th>
+<th>انتخاب</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>isLoading</code>, <code>isOpen</code>, تب انتخاب‌شده</td>
+<td><code>signal()</code></td>
+</tr>
+<tr>
+<td>parent می‌دهد، child فقط نمایش می‌دهد</td>
+<td><code>input()</code></td>
+</tr>
+<tr>
+<td>رویداد به parent</td>
+<td><code>output()</code></td>
+</tr>
+<tr>
+<td>کنترل سفارشی (checkbox، rating، datepicker)</td>
+<td><code>model()</code></td>
+</tr>
+<tr>
+<td>مقدار مشتق‌شده</td>
+<td><code>computed()</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>قاعده‌ی تصمیم: آیا parent باید مقدار بدهد؟ نه → <code>signal()</code>. بله و child تغییر نمی‌دهد → <code>input()</code>؛ بله و child تغییر می‌دهد → <code>model()</code>.</p>
+<h3>نکات مهم</h3>
+<ol>
+<li><code>model()</code> برای state داخلی استفاده نکنید؛ API عمومی می‌سازد.</li>
+<li>در two-way binding با signal، در template <strong>پرانتز نگذارید</strong>: <code>[(value)]=&quot;qty&quot;</code> نه <code>qty()</code>.</li>
+<li>مقدار مشتق‌شده را با <code>computed</code> بسازید.</li>
+<li><code>model()</code> گزینه‌ی <code>transform</code> ندارد؛ برای قانون، متد بنویسید.</li>
+<li>مراقب loop در <code>effect</code> باشید (نوشتن روی model که همان effect می‌خواند).</li>
+</ol>
+<h3>مثال: Rating</h3>
+<pre><code class="language-typescript">@Component({
+  selector: &#39;app-rating&#39;,
+  template: `
+    @for (star of stars; track star) {
+      &lt;button (click)=&#34;rate(star)&#34; [class.active]=&#34;star &lt;= value()&#34;&gt;★&lt;/button&gt;
+    }
+  `,
+})
+export class Rating {
+  protected readonly stars = [1, 2, 3, 4, 5];
+  readonly value = model(0);
+  readonly disabled = input(false);
+
+  rate(n: number) {
+    if (this.disabled()) return;
+    this.value.set(n);
+  }
+}
+</code></pre>
+<pre><code class="language-html">&lt;app-rating [(value)]=&#34;productRating&#34; [disabled]=&#34;isReadonly()&#34; /&gt;
+</code></pre>
+<h3>جمع‌بندی</h3>
+<ul>
+<li><strong>signal</strong> = مال خودم است.</li>
+<li><strong>input</strong> = از بیرون می‌گیرم، فقط می‌خوانم.</li>
+<li><strong>output</strong> = رویداد به بیرون می‌فرستم.</li>
+<li><strong>model</strong> = می‌گیرم، تغییر می‌دهم، و بیرون باخبر می‌شود.</li>
+</ul>
+<p><code>model()</code> را برای کامپوننت‌های UI قابل‌استفاده‌ی مجدد (shared/ui) نگه دارید؛ در Smart/Container بیشتر <code>signal</code>، <code>computed</code> و سرویس‌های state.</p>
+<hr>
+<h2>15. Signal Queries</h2>
+<p>جایگزین <code>@ViewChild</code> و <code>@ContentChild</code> به‌صورت signal:</p>
+<pre><code class="language-typescript">nameInput = viewChild&lt;ElementRef&lt;HTMLInputElement&gt;&gt;(&#39;nameInput&#39;);
+tabs = viewChildren(TabComponent);
+header = contentChild(HeaderDirective);
+
+focus() {
+  this.nameInput()?.nativeElement.focus();
+}
+
+tabCount = computed(() =&gt; this.tabs().length);
+</code></pre>
+<p><strong>چرا بهتر است:</strong> نیازی به <code>ngAfterViewInit</code> نیست؛ مقدار reactive است و در <code>computed</code> قابل استفاده است.</p>
+<hr>
+<h2>16. تعامل با RxJS</h2>
+<p>Signal جایگزین RxJS نیست.</p>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>RxJS</th>
+<th>Signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>جریان رویداد در زمان (debounce، switchMap، retry، websocket)</td>
+<td>state فعلی و نمایش در UI</td>
+</tr>
+<tr>
+<td>async و cancellation</td>
+<td>مقدار همزمان</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3><code>toSignal()</code></h3>
+<pre><code class="language-typescript">users = toSignal(this.http.get&lt;User[]&gt;(&#39;/api/users&#39;), { initialValue: [] });
+</code></pre>
+<p>اشتراک را خودکار مدیریت و unsubscribe می‌کند.</p>
+<h3><code>toObservable()</code></h3>
+<pre><code class="language-typescript">results = toSignal(
+  toObservable(this.search).pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    switchMap(q =&gt; this.api.search(q)),
+  ),
+  { initialValue: [] },
+);
+</code></pre>
+<p><strong>الگوی طلایی:</strong> signal برای state، RxJS برای عملیات زمانی، و <code>toSignal</code> در انتها.</p>
+<hr>
+<h2>17. <code>resource()</code> و <code>httpResource()</code></h2>
+<p><strong>مفهوم:</strong> مدیریت بارگذاری async به‌صورت signal با وضعیت loading و error.</p>
+<blockquote>
+<p>این API نسبتاً جدید است و بسته به نسخه ممکن است experimental باشد، و نام گزینه‌ها (<code>params</code> یا <code>request</code>) بین نسخه‌ها فرق کرده است. مستندات نسخه‌ی پروژه را بررسی کنید.</p>
+</blockquote>
+<pre><code class="language-typescript">guid = input.required&lt;string&gt;();
+
+license = resource({
+  params: () =&gt; ({ guid: this.guid() }),
+  loader: ({ params }) =&gt; this.api.getByGuid(params.guid),
+});
+</code></pre>
+<pre><code class="language-html">@if (license.isLoading()) { &lt;spinner /&gt; }
+@else if (license.error()) { &lt;p&gt;خطا&lt;/p&gt; }
+@else if (license.value(); as l) { &lt;p&gt;{{ l.ownerName }}&lt;/p&gt; }
+</code></pre>
+<p>با تغییر <code>guid</code> خودکار دوباره لود می‌کند و درخواست قبلی را لغو می‌کند.</p>
+<hr>
+<h2>18. نقشه‌ی تصمیم‌گیری</h2>
+<pre><code>state داخلی ساده؟                       → signal()
+مشتق از چیز دیگر؟                       → computed()
+مشتق ولی کاربر هم باید بتواند عوضش کند؟   → linkedSignal()
+از parent می‌گیرم، فقط می‌خوانم؟          → input()
+به parent رویداد می‌فرستم؟              → output()
+هم می‌گیرم هم تغییر می‌دهم؟             → model()
+کار بیرونی (storage/log/canvas)؟        → effect()
+عنصر DOM یا child؟                      → viewChild()
+async + loading/error؟                  → resource() / RxJS + toSignal
+</code></pre>
+<hr>
+<h2>19. مثال یکپارچه با Clean Architecture / DDD</h2>
+<h3>Store (لایه‌ی Application)</h3>
+<pre><code class="language-typescript">// vehicle-license.store.ts
+@Injectable()
+export class VehicleLicenseStore {
+  private readonly api = inject(VehicleLicenseApi);
+
+  // state خصوصی قابل‌نوشتن
+  private readonly _items = signal&lt;VehicleLicense[]&gt;([]);
+  private readonly _loading = signal(false);
+  private readonly _error = signal&lt;string | null&gt;(null);
+  readonly search = signal(&#39;&#39;);
+
+  // نمای فقط‌خواندنی برای بیرون
+  readonly items = this._items.asReadonly();
+  readonly loading = this._loading.asReadonly();
+  readonly error = this._error.asReadonly();
+
+  // مقدار مشتق‌شده
+  readonly filtered = computed(() =&gt; {
+    const q = this.search().trim().toLowerCase();
+    return this._items().filter(x =&gt; x.plateNumber.toLowerCase().includes(q));
+  });
+  readonly count = computed(() =&gt; this.filtered().length);
+
+  // عملیات (use-case)
+  async load() {
+    this._loading.set(true);
+    this._error.set(null);
+    try {
+      this._items.set(await firstValueFrom(this.api.getAll()));
+    } catch {
+      this._error.set(&#39;بارگذاری ناموفق بود&#39;);
+    } finally {
+      this._loading.set(false);
+    }
+  }
+
+  remove(id: string) {
+    this._items.update(list =&gt; list.filter(x =&gt; x.id !== id));
+  }
+}
+</code></pre>
+<h3>کامپوننت Smart (Container)</h3>
+<pre><code class="language-typescript">@Component({
+  selector: &#39;rg-vehicle-license-list&#39;,
+  imports: [LicenseTable, SearchBox],
+  providers: [VehicleLicenseStore],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    &lt;rg-search-box [(value)]=&#34;store.search&#34; /&gt;
+
+    @if (store.loading()) { &lt;p&gt;در حال بارگذاری...&lt;/p&gt; }
+    @else if (store.error(); as err) { &lt;p&gt;{{ err }}&lt;/p&gt; }
+    @else {
+      &lt;p&gt;تعداد: {{ store.count() }}&lt;/p&gt;
+      &lt;rg-license-table
+        [items]=&#34;store.filtered()&#34;
+        (deleted)=&#34;store.remove($event)&#34; /&gt;
+    }
+  `,
+})
+export class VehicleLicenseList implements OnInit {
+  protected readonly store = inject(VehicleLicenseStore);
+  ngOnInit() { this.store.load(); }
+}
+</code></pre>
+<h3>کامپوننت‌های Dumb (UI قابل‌استفاده‌ی مجدد)</h3>
+<pre><code class="language-typescript">@Component({
+  selector: &#39;rg-search-box&#39;,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    &lt;input [value]=&#34;value()&#34; (input)=&#34;value.set($any($event.target).value)&#34; /&gt;
+  `,
+})
+export class SearchBox {
+  value = model(&#39;&#39;);
+}
+
+@Component({
+  selector: &#39;rg-license-table&#39;,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    @for (i of items(); track i.id) {
+      &lt;div&gt;{{ i.plateNumber }}
+        &lt;button (click)=&#34;deleted.emit(i.id)&#34;&gt;حذف&lt;/button&gt;
+      &lt;/div&gt;
+    }
+  `,
+})
+export class LicenseTable {
+  items = input.required&lt;VehicleLicense[]&gt;();
+  deleted = output&lt;string&gt;();
+}
+</code></pre>
+<h3>نگاشت به Clean/DDD</h3>
+<div class="md-table" role="group" aria-label="Table" tabindex="0"><table>
+<thead>
+<tr>
+<th>بخش</th>
+<th>معادل معماری</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Store</td>
+<td>لایه‌ی Application (use-caseها و state)</td>
+</tr>
+<tr>
+<td>Api</td>
+<td>لایه‌ی Infrastructure</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>Smart Component (هماهنگ‌کننده)</td>
+</tr>
+<tr>
+<td>Dumb components</td>
+<td>UI خالص بدون وابستگی به سرویس</td>
+</tr>
+<tr>
+<td><code>asReadonly()</code></td>
+<td>مرز encapsulation بین لایه‌ها</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2>20. اشتباهات رایج</h2>
+<ol>
+<li><strong>تغییر object به‌صورت mutable</strong> (<code>this.user().age = 5</code>). همیشه object جدید بسازید.</li>
+<li><strong>استفاده از <code>effect</code> برای مقدار مشتق‌شده.</strong> از <code>computed</code> استفاده کنید.</li>
+<li><strong>فراموشی <code>()</code></strong> هنگام خواندن (<code>count</code> به‌جای <code>count()</code>).</li>
+<li><strong><code>model()</code> برای state داخلی.</strong> <code>signal()</code> کافی است.</li>
+<li><strong>ساختن effect بیرون از injection context.</strong></li>
+<li><strong>نوشتن wrapper بی‌منطق</strong> (مثل get/set خام روی signal).</li>
+<li><strong>فراموشی RxJS</strong> برای debounce، cancel و stream.</li>
+<li><strong>عدم استفاده از <code>track</code></strong> در <code>@for</code> (عملکرد و حفظ state DOM را خراب می‌کند).</li>
+<li><strong>محاسبه‌ی سنگین در effect/computed</strong> بدون توجه به وابستگی‌ها.</li>
+</ol>
+<hr>
+<h2>21. مسیر یادگیری پیشنهادی</h2>
+<ol>
+<li><code>signal</code> / <code>computed</code> / <code>effect</code> و immutability</li>
+<li><code>input</code> / <code>output</code> / <code>model</code> و الگوی Smart/Dumb</li>
+<li><code>OnPush</code> و درک Change Detection</li>
+<li><code>toSignal</code> / <code>toObservable</code> و ترکیب با RxJS</li>
+<li><code>linkedSignal</code> / <code>resource</code></li>
+<li>Signal Store (مثل NgRx SignalStore) برای state بزرگ</li>
+<li>Zoneless (<code>provideZonelessChangeDetection</code>)</li>
+<li>تست کامپوننت‌های signal-based</li>
+</ol>
+<blockquote>
+<p><strong>پیشنهاد برای GitHub portfolio:</strong> یک پروژه‌ی کوچک (مثلاً مدیریت گواهی خودرو) با Store مبتنی بر signal، کامپوننت‌های OnPush، یک <code>model</code> در shared/ui و یک <code>resource</code> برای لود داده بسازید و در README دلیل هر انتخاب را بنویسید.</p>
+</blockquote>
+<hr>
+<h2>خلاصه‌ی قواعد طلایی</h2>
+<ul>
+<li>wrapper (get/set یا متد) فقط وقتی که <strong>منطق واقعی</strong> دارد.</li>
+<li>state قابل‌نوشتن را <strong>private</strong> نگه دارید و با <code>asReadonly()</code> بیرون بدهید.</li>
+<li>مقدار مشتق‌شده = <code>computed</code>، نه <code>effect</code> و نه getter.</li>
+<li>داده به پایین با <code>input</code>، رویداد به بالا با <code>output</code>، مقدار مشترک با <code>model</code>.</li>
+<li>Signal برای state، RxJS برای stream و زمان.</li>
+<li>همیشه immutable به‌روزرسانی کنید و <code>OnPush</code> بگذارید.</li>
+</ul>
+
+</body></html>
